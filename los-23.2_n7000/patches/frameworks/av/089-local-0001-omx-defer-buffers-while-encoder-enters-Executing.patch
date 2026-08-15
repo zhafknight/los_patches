@@ -1,0 +1,55 @@
+From 45ba99240409b6ed00af42ddccb6232240cd5129 Mon Sep 17 00:00:00 2001
+From: N7000 Patch Merge <n7000-patches@local.invalid>
+Date: Mon, 27 Jul 2026 00:00:00 +0800
+Subject: [PATCH] omx: defer buffers while encoder enters Executing
+
+Imported from lineage-diff-20260727 for the GT-N7000 LineageOS 23.2 tree.
+
+---
+diff --git a/media/libstagefright/omx/SimpleSoftOMXComponent.cpp b/media/libstagefright/omx/SimpleSoftOMXComponent.cpp
+index 44415aa8c5..dcb753a639 100644
+--- a/media/libstagefright/omx/SimpleSoftOMXComponent.cpp
++++ b/media/libstagefright/omx/SimpleSoftOMXComponent.cpp
+@@ -420,7 +420,39 @@ void SimpleSoftOMXComponent::onMessageReceived(const sp<AMessage> &msg) {
+                 frameConfig = 0;
+             }
+ 
+-            CHECK(mState == OMX_StateExecuting && mTargetState == mState);
++            // GraphicBufferSource may submit the first encoder buffer while
++            // the asynchronous Idle -> Executing command is still queued on
++            // this looper. Newer CameraX/MediaCodec pipelines expose this race
++            // reliably on slow 32-bit legacy devices. Do not abort the whole
++            // OMX service; briefly defer the buffer until the state command
++            // has run.
++            if (mState != OMX_StateExecuting || mTargetState != mState) {
++                int32_t stateRetry = 0;
++                msg->findInt32("state-retry", &stateRetry);
++                const bool starting =
++                        mState == OMX_StateIdle &&
++                        (mTargetState == OMX_StateIdle ||
++                         mTargetState == OMX_StateExecuting);
++                if (starting && stateRetry < 25) {
++                    sp<AMessage> retry = msg->dup();
++                    retry->setInt32("state-retry", stateRetry + 1);
++                    retry->post(2000);  // 2 ms, at most 50 ms total.
++                    break;
++                }
++
++                ALOGW("Returning buffer received outside Executing state "
++                      "(state=%d target=%d retry=%d)",
++                      mState, mTargetState, stateRetry);
++                if (msgType == kWhatEmptyThisBuffer) {
++                    notifyEmptyBufferDone(header);
++                } else {
++                    header->nFilledLen = 0;
++                    header->nOffset = 0;
++                    header->nFlags = 0;
++                    notifyFillBufferDone(header);
++                }
++                break;
++            }
+ 
+             bool found = false;
+             size_t portIndex = (kWhatEmptyThisBuffer == msgType)?
+-- 
+2.53.0

@@ -1,0 +1,40 @@
+From 5710ab7b5679a0bbb59be513ac425800abbc8c35 Mon Sep 17 00:00:00 2001
+From: Yaroslav Zviezda <acroreiser@gmail.com>
+Date: Sun, 22 Mar 2026 15:35:37 -0400
+Subject: [PATCH 8/8] renderengine: compilation fixes for 16 QPR1
+
+Change-Id: I09543b85e637cfe8fe64a704f0e381ba57f2334b
+---
+ services/surfaceflinger/SurfaceFlinger.cpp | 2 +-
+ services/surfaceflinger/SurfaceFlinger.h   | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/services/surfaceflinger/SurfaceFlinger.cpp b/services/surfaceflinger/SurfaceFlinger.cpp
+index c8a3e00..e35e6a8 100644
+--- a/services/surfaceflinger/SurfaceFlinger.cpp
++++ b/services/surfaceflinger/SurfaceFlinger.cpp
+@@ -6084,7 +6084,7 @@ status_t SurfaceFlinger::createLayer(LayerCreationArgs& args, gui::CreateSurface
+     return result;
+ }
+ 
+-status_t SurfaceFlinger::createLayer(const LayerCreationArgs& args, sp<IBinder>* handle,
++status_t SurfaceFlinger::createLayer(LayerCreationArgs& args, sp<IBinder>* handle,
+                                      sp<Layer>* outLayer) {
+     if (checkLayerLeaks() != NO_ERROR) {
+         return NO_MEMORY;
+diff --git a/services/surfaceflinger/SurfaceFlinger.h b/services/surfaceflinger/SurfaceFlinger.h
+index 529ba9d..04072ac 100644
+--- a/services/surfaceflinger/SurfaceFlinger.h
++++ b/services/surfaceflinger/SurfaceFlinger.h
+@@ -863,7 +863,7 @@ private:
+      */
+     status_t createLayer(LayerCreationArgs& args, gui::CreateSurfaceResult& outResult);
+ 
+-    status_t createLayer(const LayerCreationArgs& args, sp<IBinder>* outHandle,
++    status_t createLayer(LayerCreationArgs& args, sp<IBinder>* outHandle,
+                          sp<Layer>* outLayer);
+ 
+     // Checks if there are layer leaks before creating layer
+-- 
+2.53.0
+
