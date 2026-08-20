@@ -1,0 +1,31 @@
+diff --git a/contents/namespace/sphal.cc b/contents/namespace/sphal.cc
+index 8a6e99e..f3e4153 100644
+--- a/contents/namespace/sphal.cc
++++ b/contents/namespace/sphal.cc
+@@ -41,6 +41,8 @@ Namespace BuildSphalNamespace([[maybe_unused]] const Context& ctx) {
+   ns.AddSearchPath("/vendor/${LIB}");
+   ns.AddSearchPath("/vendor/${LIB}/egl");
+   ns.AddSearchPath("/vendor/${LIB}/hw");
++  ns.AddSearchPath("/system/${LIB}/egl");
++  ns.AddSearchPath("/system/${LIB}");
+ 
+   ns.AddPermittedPath("/odm/${LIB}");
+   ns.AddPermittedPath("/vendor/${LIB}");
+diff --git a/contents/namespace/vendordefault.cc b/contents/namespace/vendordefault.cc
+index a4a0b8a..82ca02b 100644
+--- a/contents/namespace/vendordefault.cc
++++ b/contents/namespace/vendordefault.cc
+@@ -56,8 +56,12 @@ Namespace BuildVendorNamespace([[maybe_unused]] const Context& ctx,
+           .AddSharedLib(Var("VNDK_USING_CORE_VARIANT_LIBRARIES"));
+     }
+   }
+-
++  ns.AddSearchPath("/system/${LIB}");
+   ns.AddRequires(std::vector{"libneuralnetworks.so"});
++  ns.AddRequires(std::vector{"libicuuc.so"});
++  ns.AddRequires(std::vector{"libgui.so"});
++  ns.AddRequires(std::vector{"libandroidicu.so"});
++
+   ns.AddRequires(ctx.GetVendorRequireLibs());
+   ns.AddProvides(ctx.GetVendorProvideLibs());
+   return ns;

@@ -1,0 +1,35 @@
+diff --git a/core/java/android/os/Build.java b/core/java/android/os/Build.java
+index 0b956f8bf9e0..1781df51444a 100755
+--- a/core/java/android/os/Build.java
++++ b/core/java/android/os/Build.java
+@@ -1261,7 +1261,7 @@ public class Build {
+                         + String.valueOf(result));
+             }
+ 
+-            return result == 0;
++            return true;
+         }
+ 
+         final String system = SystemProperties.get("ro.system.build.fingerprint");
+diff --git a/core/res/res/values/config.xml b/core/res/res/values/config.xml
+index 7e934388f8c3..0431500a7cb7 100644
+--- a/core/res/res/values/config.xml
++++ b/core/res/res/values/config.xml
+@@ -1405,7 +1405,7 @@
+          This needs to match the constants in
+          policy/src/com/android/internal/policy/impl/PhoneWindowManager.java
+     -->
+-    <integer name="config_longPressOnHomeBehavior">0</integer>
++    <integer name="config_longPressOnHomeBehavior">7</integer>
+ 
+     <!-- Control the behavior when the user double-taps the home button.
+             0 - Nothing
+@@ -1414,7 +1414,7 @@
+          This needs to match the constants in
+          policy/src/com/android/internal/policy/impl/PhoneWindowManager.java
+     -->
+-    <integer name="config_doubleTapOnHomeBehavior">0</integer>
++    <integer name="config_doubleTapOnHomeBehavior">2</integer>
+ 
+     <!-- Note: This setting is deprecated, please use
+     config_screenBrightnessSettingMinimumFloat instead -->

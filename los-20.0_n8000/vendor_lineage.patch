@@ -1,0 +1,54 @@
+diff --git a/bootanimation/bootanimation.tar b/bootanimation/bootanimation.tar
+index 7e4b0dc9..14d56062 100644
+Binary files a/bootanimation/bootanimation.tar and b/bootanimation/bootanimation.tar differ
+diff --git a/build/soong/Android.bp b/build/soong/Android.bp
+index 18658211..4e95c4eb 100644
+--- a/build/soong/Android.bp
++++ b/build/soong/Android.bp
+@@ -558,3 +558,20 @@ has_memfd_backport {
+         },
+     },
+ }
++
++soong_config_module_type {
++    name: "egl_needs_handle_value",
++    module_type: "cc_defaults",
++    config_namespace: "lineageGlobalVars",
++    bool_variables: ["egl_needs_handle_value"],
++    properties: ["cppflags"],
++}
++
++egl_needs_handle_value {
++    name: "egl_needs_handle_value_defaults",
++   soong_config_variables: {
++        egl_needs_handle_value: {
++            cppflags: ["-DEGL_NEEDS_HANDLE"],
++        },
++    },
++}
+\ No newline at end of file
+diff --git a/config/BoardConfigSoong.mk b/config/BoardConfigSoong.mk
+index 3d24f9c4..d1c8ed4e 100644
+--- a/config/BoardConfigSoong.mk
++++ b/config/BoardConfigSoong.mk
+@@ -146,3 +146,6 @@ SOONG_CONFIG_lineageGlobalVars_target_process_sdk_version_override := $(TARGET_P
+ 
+ SOONG_CONFIG_lineageGlobalVars += has_memfd_backport
+ SOONG_CONFIG_lineageGlobalVars_has_memfd_backport := $(TARGET_HAS_MEMFD_BACKPORT)
++
++SOONG_CONFIG_lineageGlobalVars_egl_needs_handle_value := $(BOARD_EGL_NEEDS_HANDLE_VALUE)
++
+diff --git a/config/common_mobile.mk b/config/common_mobile.mk
+index 28ebeefc..3ae58633 100644
+--- a/config/common_mobile.mk
++++ b/config/common_mobile.mk
+@@ -15,8 +15,7 @@ PRODUCT_PRODUCT_PROPERTIES += \
+ # Apps
+ PRODUCT_PACKAGES += \
+     Backgrounds \
+-    ExactCalculator \
+-    Jelly
++    ExactCalculator 
+ 
+ ifeq ($(PRODUCT_TYPE), go)
+ PRODUCT_PACKAGES += \

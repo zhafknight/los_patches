@@ -1,0 +1,12 @@
+diff --git a/ui/build/paths/config.go b/ui/build/paths/config.go
+index 831a80f97..ae636ad66 100644
+--- a/ui/build/paths/config.go
++++ b/ui/build/paths/config.go
+@@ -87,6 +87,7 @@ var Configuration = map[string]PathConfig{
+ 	"java":    Allowed,
+ 	"javap":   Allowed,
+ 	"lsof":    Allowed,
++	"nproc":   Allowed,
+ 	"openssl": Allowed,
+ 	"pstree":  Allowed,
+ 	"rsync":   Allowed,

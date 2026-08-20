@@ -1,0 +1,58 @@
+diff --git a/libprocessgroup/profiles/task_profiles.json b/libprocessgroup/profiles/task_profiles.json
+index 4092c1a37..cd75e52ff 100644
+--- a/libprocessgroup/profiles/task_profiles.json
++++ b/libprocessgroup/profiles/task_profiles.json
+@@ -57,21 +57,6 @@
+       "Controller": "memory",
+       "File": "cgroup.event_control"
+     },
+-    {
+-      "Name": "UClampMin",
+-      "Controller": "cpu",
+-      "File": "cpu.uclamp.min"
+-    },
+-    {
+-      "Name": "UClampMax",
+-      "Controller": "cpu",
+-      "File": "cpu.uclamp.max"
+-    },
+-    {
+-      "Name": "UClampLatencySensitive",
+-      "Controller": "cpu",
+-      "File": "cpu.uclamp.latency_sensitive"
+-    },
+     {
+       "Name": "FreezerState",
+       "Controller": "freezer",
+@@ -225,29 +210,11 @@
+     },
+     {
+       "Name": "CpuPolicySpread",
+-      "Actions": [
+-        {
+-          "Name": "SetAttribute",
+-          "Params":
+-          {
+-            "Name": "UClampLatencySensitive",
+-            "Value": "1"
+-          }
+-        }
+-      ]
++      "Actions": []
+     },
+     {
+       "Name": "CpuPolicyPack",
+-      "Actions": [
+-        {
+-          "Name": "SetAttribute",
+-          "Params":
+-          {
+-            "Name": "UClampLatencySensitive",
+-            "Value": "0"
+-          }
+-        }
+-      ]
++      "Actions": []
+     },
+ 
+     {

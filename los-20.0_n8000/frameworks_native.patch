@@ -1,0 +1,112 @@
+diff --git a/libs/ui/Android.bp b/libs/ui/Android.bp
+index 41a7adcf8e..38a256827b 100644
+--- a/libs/ui/Android.bp
++++ b/libs/ui/Android.bp
+@@ -161,6 +161,7 @@ cc_library_shared {
+         "gralloc_10_usage_bits_defaults",
+         // Uncomment the following line to enable VALIDATE_REGIONS traces
+         //defaults: ["libui-validate-regions-defaults"],
++       "egl_needs_handle_value_defaults",
+     ],
+ 
+     shared_libs: [
+diff --git a/libs/ui/GraphicBuffer.cpp b/libs/ui/GraphicBuffer.cpp
+index 3732fee7f2..3755d5663d 100644
+--- a/libs/ui/GraphicBuffer.cpp
++++ b/libs/ui/GraphicBuffer.cpp
+@@ -125,7 +125,9 @@ void GraphicBuffer::free_handle()
+         GraphicBufferAllocator& allocator(GraphicBufferAllocator::get());
+         allocator.free(handle);
+     }
++#ifndef EGL_NEEDS_HANDLE
+     handle = nullptr;
++#endif
+ }
+ 
+ status_t GraphicBuffer::initCheck() const {
+diff --git a/services/inputflinger/reader/mapper/TouchInputMapper.cpp b/services/inputflinger/reader/mapper/TouchInputMapper.cpp
+index 5a7016780a..7b13d41b8e 100644
+--- a/services/inputflinger/reader/mapper/TouchInputMapper.cpp
++++ b/services/inputflinger/reader/mapper/TouchInputMapper.cpp
+@@ -42,6 +42,8 @@ static constexpr nsecs_t TOUCH_DATA_TIMEOUT = ms2ns(20);
+ // data.
+ static constexpr nsecs_t STYLUS_DATA_LATENCY = ms2ns(10);
+ 
++static const nsecs_t STYLUS_PALM_REJECTION_TIME = ms2ns(50);
++
+ // --- Static Definitions ---
+ 
+ static const DisplayViewport kUninitializedViewport;
+@@ -3451,6 +3453,7 @@ void TouchInputMapper::dispatchPointerStylus(nsecs_t when, nsecs_t readTime, uin
+         mPointerSimple.currentProperties.id = 0;
+         mPointerSimple.currentProperties.toolType =
+                 mCurrentCookedState.cookedPointerData.pointerProperties[index].toolType;
++        mLastStylusTime = when;
+     } else {
+         down = false;
+         hovering = false;
+@@ -3526,7 +3529,7 @@ void TouchInputMapper::dispatchPointerSimple(nsecs_t when, nsecs_t readTime, uin
+     int32_t metaState = getContext()->getGlobalMetaState();
+ 
+     if (down || hovering) {
+-        mPointerController->setPresentation(PointerControllerInterface::Presentation::POINTER);
++        mPointerController->setPresentation(PointerControllerInterface::Presentation::SPOT);
+         mPointerController->clearSpots();
+         mPointerController->setButtonState(mCurrentRawState.buttonState);
+         mPointerController->unfade(PointerControllerInterface::Transition::IMMEDIATE);
+@@ -3538,6 +3541,11 @@ void TouchInputMapper::dispatchPointerSimple(nsecs_t when, nsecs_t readTime, uin
+     float xCursorPosition, yCursorPosition;
+     mPointerController->getPosition(&xCursorPosition, &yCursorPosition);
+ 
++    if (rejectPalm(when)) {     // stylus is currently active
++            mPointerSimple.reset();
++            return;
++        }
++
+     if (mPointerSimple.down && !down) {
+         mPointerSimple.down = false;
+ 
+@@ -3684,6 +3692,8 @@ void TouchInputMapper::dispatchMotion(nsecs_t when, nsecs_t readTime, uint32_t p
+                                       const PointerCoords* coords, const uint32_t* idToIndex,
+                                       BitSet32 idBits, int32_t changedId, float xPrecision,
+                                       float yPrecision, nsecs_t downTime) {
++   if (rejectPalm(when)) return;
++
+     PointerCoords pointerCoords[MAX_POINTERS];
+     PointerProperties pointerProperties[MAX_POINTERS];
+     uint32_t pointerCount = 0;
+@@ -4072,5 +4082,12 @@ std::optional<int32_t> TouchInputMapper::getAssociatedDisplayId() {
+     }
+     return std::nullopt;
+ }
++nsecs_t TouchInputMapper::mLastStylusTime = 0;
++
++bool TouchInputMapper::rejectPalm(nsecs_t when) {
++    return (when - mLastStylusTime < STYLUS_PALM_REJECTION_TIME) &&
++        mPointerSimple.currentProperties.toolType != AMOTION_EVENT_TOOL_TYPE_STYLUS &&
++    mPointerSimple.currentProperties.toolType != AMOTION_EVENT_TOOL_TYPE_ERASER;
++}
+ 
+ } // namespace android
+diff --git a/services/inputflinger/reader/mapper/TouchInputMapper.h b/services/inputflinger/reader/mapper/TouchInputMapper.h
+index 2937bf88d4..8a8cb6866d 100644
+--- a/services/inputflinger/reader/mapper/TouchInputMapper.h
++++ b/services/inputflinger/reader/mapper/TouchInputMapper.h
+@@ -400,6 +400,9 @@ protected:
+     // The time the primary pointer last went down.
+     nsecs_t mDownTime;
+ 
++    // Time when the stylus touched last
++    static nsecs_t mLastStylusTime ;
++
+     // The pointer controller, or null if the device is not a pointer.
+     std::shared_ptr<PointerControllerInterface> mPointerController;
+ 
+@@ -751,6 +754,7 @@ private:
+ 
+     void sync(nsecs_t when, nsecs_t readTime);
+ 
++    bool rejectPalm(nsecs_t when) ;
+     bool consumeRawTouches(nsecs_t when, nsecs_t readTime, uint32_t policyFlags);
+     void processRawTouches(bool timeout);
+     void cookAndDispatch(nsecs_t when, nsecs_t readTime);

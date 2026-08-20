@@ -1,0 +1,117 @@
+diff --git a/media/libstagefright/ACodec.cpp b/media/libstagefright/ACodec.cpp
+index 8778a666f9..d45e17f20e 100644
+--- a/media/libstagefright/ACodec.cpp
++++ b/media/libstagefright/ACodec.cpp
+@@ -4971,8 +4971,8 @@ status_t ACodec::verifySupportForProfileAndLevel(
+         }
+ 
+         if (index == kMaxIndicesToCheck) {
+-            ALOGW("[%s] stopping checking profiles after %u: %x/%x",
+-                    mComponentName.c_str(), index,
++            ALOGW("[%s] %d: stopping checking profiles after %u: %x/%x",
++                    mComponentName.c_str(), __LINE__, index,
+                     params.eProfile, params.eLevel);
+         }
+     }
+diff --git a/services/audioflinger/Threads.cpp b/services/audioflinger/Threads.cpp
+index 458828c2c5..0e7904e030 100644
+--- a/services/audioflinger/Threads.cpp
++++ b/services/audioflinger/Threads.cpp
+@@ -629,12 +629,14 @@ status_t AudioFlinger::ThreadBase::sendConfigEvent_l(sp<ConfigEvent>& event)
+     if (event->mRequiresSystemReady && !mSystemReady) {
+         event->mWaitStatus = false;
+         mPendingConfigEvents.add(event);
++	ALOGE("%s: %d: return status = %d", __func__, __LINE__, status);
+         return status;
+     }
+     mConfigEvents.add(event);
+     ALOGV("sendConfigEvent_l() num events %zu event %d", mConfigEvents.size(), event->mType);
+     mWaitWorkCV.signal();
+     mLock.unlock();
++    ALOGE("%s: %d: event->mStatus = %d", __func__, __LINE__, status);
+     {
+         Mutex::Autolock _l(event->mLock);
+         while (event->mWaitStatus) {
+@@ -646,7 +648,8 @@ status_t AudioFlinger::ThreadBase::sendConfigEvent_l(sp<ConfigEvent>& event)
+         status = event->mStatus;
+     }
+     mLock.lock();
+-    return status;
++    ALOGE("%s: %d: event->mStatus = %d", __func__, __LINE__, status);
++     return status;
+ }
+ 
+ void AudioFlinger::ThreadBase::sendIoConfigEvent(audio_io_config_event_t event, pid_t pid,
+@@ -714,6 +717,7 @@ status_t AudioFlinger::ThreadBase::sendCreateAudioPatchConfigEvent(
+     Mutex::Autolock _l(mLock);
+     sp<ConfigEvent> configEvent = (ConfigEvent *)new CreateAudioPatchConfigEvent(*patch, *handle);
+     status_t status = sendConfigEvent_l(configEvent);
++    ALOGE("%s: %d: sendConfigEvent_l returns %d", __func__, __LINE__, status);
+     if (status == NO_ERROR) {
+         CreateAudioPatchConfigEventData *data =
+                                         (CreateAudioPatchConfigEventData *)configEvent->mData.get();
+@@ -806,6 +810,7 @@ void AudioFlinger::ThreadBase::processConfigEvents_l()
+             CreateAudioPatchConfigEventData *data =
+                                             (CreateAudioPatchConfigEventData *)event->mData.get();
+             event->mStatus = createAudioPatch_l(&data->mPatch, &data->mHandle);
++            ALOGE("%s: %d: createAudioPatch_l returns %d", __func__, __LINE__, event->mStatus);
+             const DeviceTypeSet newDevices = getDeviceTypes();
+             mLocalLog.log("CFG_EVENT_CREATE_AUDIO_PATCH: old device %s (%s) new device %s (%s)",
+                     dumpDeviceTypes(oldDevices).c_str(), toString(oldDevices).c_str(),
+@@ -4581,7 +4586,8 @@ status_t AudioFlinger::MixerThread::createAudioPatch_l(const struct audio_patch
+     } else {
+         status = PlaybackThread::createAudioPatch_l(patch, handle);
+     }
+-    return status;
++     ALOGE("%s: %d: returning %d", __func__, __LINE__, status);
++     return NO_ERROR;//status;
+ }
+ 
+ status_t AudioFlinger::PlaybackThread::createAudioPatch_l(const struct audio_patch *patch,
+@@ -4662,7 +4668,9 @@ status_t AudioFlinger::PlaybackThread::createAudioPatch_l(const struct audio_pat
+     if (configChanged) {
+         sendIoConfigEvent_l(AUDIO_OUTPUT_CONFIG_CHANGED);
+     }
+-    return status;
++    ALOGE("%s: %d: returning %d", __func__, __LINE__, status);
++
++    return NO_ERROR;//status;
+ }
+ 
+ status_t AudioFlinger::MixerThread::releaseAudioPatch_l(const audio_patch_handle_t handle)
+@@ -9324,7 +9332,9 @@ status_t AudioFlinger::RecordThread::createAudioPatch_l(const struct audio_patch
+         track->logEndInterval();
+         track->logBeginInterval(pathSourcesAsString);
+     }
+-    return status;
++    ALOGE("%s: %d: returning %d", __func__, __LINE__, status);
++
++    return NO_ERROR;//status;
+ }
+ 
+ status_t AudioFlinger::RecordThread::releaseAudioPatch_l(const audio_patch_handle_t handle)
+@@ -9340,7 +9350,10 @@ status_t AudioFlinger::RecordThread::releaseAudioPatch_l(const audio_patch_handl
+     } else {
+         status = mInput->stream->legacyReleaseAudioPatch();
+     }
+-    return status;
++    ALOGE("%s: %d: returning %d", __func__, __LINE__, status);
++
++    return NO_ERROR;//status;
++
+ }
+ 
+ void AudioFlinger::RecordThread::updateOutDevices(const DeviceDescriptorBaseVector& outDevices)
+diff --git a/services/audiopolicy/managerdefault/AudioPolicyManager.cpp b/services/audiopolicy/managerdefault/AudioPolicyManager.cpp
+index f625fdb3be..557889fe06 100644
+--- a/services/audiopolicy/managerdefault/AudioPolicyManager.cpp
++++ b/services/audiopolicy/managerdefault/AudioPolicyManager.cpp
+@@ -2637,7 +2637,7 @@ audio_io_handle_t AudioPolicyManager::getInputForDevice(const sp<DeviceDescripto
+             profileFlags = AUDIO_INPUT_FLAG_NONE; // retry
+         } else { // fail
+             ALOGW("%s could not find profile for device %s, sampling rate %u, format %#x, "
+-                  "channel mask 0x%X, flags %#x", __func__, device->toString().c_str(),
++                 "channel mask 0x%X, flags %#x", __func__, device->toString().c_str(),
+                   config->sample_rate, config->format, config->channel_mask, flags);
+             return input;
+         }

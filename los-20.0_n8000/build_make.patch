@@ -1,0 +1,14 @@
+diff --git a/target/product/gsi/Android.mk b/target/product/gsi/Android.mk
+index 85e551d3f..0b2359a2d 100644
+--- a/target/product/gsi/Android.mk
++++ b/target/product/gsi/Android.mk
+@@ -229,7 +229,8 @@ LOCAL_MODULE_RELATIVE_PATH := init/config
+ # belong to core CSI.
+ LOCAL_POST_INSTALL_CMD := \
+     mkdir -p $(TARGET_OUT)/etc/init; \
+-    ln -sf /system/system_ext/etc/init/config $(TARGET_OUT)/etc/init/config
++    ln -sf /system/system_ext/etc/init/config $(TARGET_OUT)/etc/init/config \
++    ln -s /vendor/lib/egl $(TARGET_OUT)/lib/egl
+ 
+ include $(BUILD_PREBUILT)
+ 
