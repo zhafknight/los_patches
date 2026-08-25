@@ -1,0 +1,24 @@
+From db52887285ca3c55c844cd957e620811efa647f8 Mon Sep 17 00:00:00 2001
+From: N7000 Patch Merge <n7000-patches@local.invalid>
+Date: Mon, 27 Jul 2026 00:00:00 +0800
+Subject: [PATCH] libril: disable the AOSP shared library variant
+
+Imported from lineage-diff-20260727 for the GT-N7000 LineageOS 23.2 tree.
+
+---
+diff --git a/libril/Android.bp b/libril/Android.bp
+index 1a8cbec..ae92ba0 100644
+--- a/libril/Android.bp
++++ b/libril/Android.bp
+@@ -31,7 +31,8 @@ license {
+ }
+ 
+ cc_library_shared {
+-    name: "libril",
++name: "libril_aosp_unused",
++    enabled: false,
+     vendor: true,
+     srcs: [
+         "ril.cpp",
+-- 
+2.53.0
