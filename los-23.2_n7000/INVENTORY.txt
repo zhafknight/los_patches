@@ -1,10 +1,7 @@
-1	recommended	core	bionic	patches/bionic/001-gsi-staging-0001-epoll_pwait2-fall-back-to-epoll_pwait-on-kernels-5.1.patch
 2	recommended	core	bionic	patches/bionic/002-gsi-staging-0002-make-property-area-init-failures-non-fatal-for-old-v.patch
-3	recommended	core	bionic	patches/bionic/003-gsi-staging-0003-bionic-tolerate-MADV_WIPEONFORK-failure-on-pre-4.14-.patch
 4	recommended	core	bionic	patches/bionic/004-legacy23-0001-linker-partially-allow-text-relocations.patch
 5	recommended	core	frameworks/base	patches/frameworks/base/005-gsi-0039-Ignore-cgroup-creation-errors.patch
 6	recommended	core	frameworks/base	patches/frameworks/base/006-gsi-0055-Not-all-kernel-support-splicing-pipes-or-is-it-socke.patch
-7	recommended	core	frameworks/base	patches/frameworks/base/007-legacy23-0001-Disable-fs-verity-as-3.18-doesn-t-support-it.patch
 8	recommended	graphics	frameworks/base	patches/frameworks/base/008-legacy23-0006-hwui-return-to-ashmem.patch
 9	recommended	core	frameworks/native	patches/frameworks/native/009-gsi-0012-Disable-gpuservice-on-old-BPF-less-kernel.patch
 10	recommended	graphics	frameworks/native	patches/frameworks/native/010-gsi-staging-0003-Stall-GpuWork-on-kernels-without-gpu_work_period-tra.patch
@@ -17,7 +14,6 @@
 17	recommended	graphics	frameworks/native	patches/frameworks/native/017-legacy23-0006-surfaceflinger-remove-display_intf_headers-dependenc.patch
 18	recommended	graphics	frameworks/native	patches/frameworks/native/018-legacy23-0008-renderengine-compilation-fixes-for-16-QPR1.patch
 20	recommended	core	system/apex	patches/system/apex/020-gsi-0001-Disable-O_DIRECT-for-old-kernels.patch
-22	recommended	core	system/core	patches/system/core/022-gsi-0017-Ignore-dm-verity-setup-issues.patch
 23	recommended	core	system/core	patches/system/core/023-gsi-0018-Fix-support-for-devices-without-cgroupv2-support.patch
 24	recommended	core	system/core	patches/system/core/024-gsi-staging-0002-Restore-old-kernel-support-in-init-and-libprocessgro.patch
 25	recommended	core	system/core	patches/system/core/025-gsi-staging-0003-libprocessgroup-fall-back-to-v1-memcg-for-lmkd-compa.patch
@@ -25,7 +21,6 @@
 30	recommended	core	system/core	patches/system/core/030-gsi-staging-0008-libprocessgroup-tolerate-ENOENT-on-cgroup-procs-write.patch
 31	recommended	media	system/core	patches/system/core/031-legacy23-0003-Camera-Add-feature-extensions.patch
 32	recommended	core	system/memory/lmkd	patches/system/memory/lmkd/032-gsi-staging-0001-Auto-promote-to-new-kill-strategy-on-cgroup-v2.patch
-33	recommended	core	system/sepolicy	patches/system/sepolicy/033-gsi-0002-Fix-sepolicy-for-kernel-5.10-that-doesn-t-support-bp.patch
 34	recommended	core	system/libhidl	patches/system/libhidl/034-legacy23-0001-Revert-delete-gBn-sConstructorMap.patch
 35	recommended	core	system/libhwbinder	patches/system/libhwbinder/035-legacy23-0001-Don-t-crash-Binder-threadpool-cannot-be-shrunk-after.patch
 55	recommended	storage	system/vold	patches/system/vold/055-gsi-staging-0001-vold-use-sdcardfs-as-fallback-when-FUSE-BPF-is-unavai.patch
@@ -42,7 +37,6 @@
 66	recommended	hardware	hardware/broadcom/wlan	patches/hardware/broadcom/wlan/066-legacy23-0001-HACK-wifi_hal-avoid-CFI-crash-when-wifi-is-turning-o.patch
 67	recommended	hardware	hardware/libhardware	patches/hardware/libhardware/067-legacy23-0001-hardware-libhw-Add-display_defs.h-to-declare-custom-.patch
 68	recommended	hardware	hardware/ril	patches/hardware/ril/068-legacy23-0001-libril-Restore-support-for-RIL-v6-v8-and-v9-stacks.patch
-69	recommended	hardware	system/tools/mkbootimg	patches/system/tools/mkbootimg/069-legacy23-0001-mkbootimg-add-support-for-dt.patch
 73	optional	display	frameworks/native	patches/frameworks/native/073-gsi-0010-Fix-loading-unnamed-GLES.patch
 75	optional	audio	frameworks/av	patches/frameworks/av/075-gsi-0001-APM-Restore-S-R-and-Q-behavior-respectively-for-tele.patch
 76	optional	audio	frameworks/av	patches/frameworks/av/076-gsi-0012-No-longer-make-re-assigning-legacy-audio-groups-fata.patch
