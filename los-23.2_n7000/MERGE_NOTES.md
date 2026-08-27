@@ -32,3 +32,12 @@ Patches 087–094 contain the supplied local diffs for bionic, frameworks/base, 
 
 - Standard Connectivity patch 044 remains removed. The supplied local Connectivity diff is retained because it is distinct and only changes the final `fatal` handling from `abort()` to `return`.
 - The supplied `system/netd` diff expects the `exit(1)` change from standard patch 053, so it remains appended later in the order.
+
+## User-provided patches added after N7000 pruning
+
+Patches 097–098 are user-provided raw diffs added for the N7000 build:
+
+- `097` (`external/chromium-webview`) removes the `optional_uses_libs` list from the prebuilt WebView import.
+- `098` (`system/linkerconfig`) exposes `libicuuc.so` and `libgui.so` to the vendor default namespace for the legacy GPS daemon.
+
+The supplied raw diffs were wrapped as normal mail patches so the existing `apply.sh` can continue to use `git am`; the diff hunks themselves are unchanged.

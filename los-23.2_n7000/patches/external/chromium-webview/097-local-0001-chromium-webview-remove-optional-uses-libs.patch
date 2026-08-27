@@ -1,0 +1,26 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: N7000 Patch Pack <n7000-patchset@localhost>
+Date: Thu, 27 Aug 2026 08:00:00 +0800
+Subject: [PATCH] chromium-webview: remove optional uses libraries
+
+Allow the prebuilt WebView APK to build without enforcing optional
+uses-library declarations that are not present on this legacy target.
+
+---
+diff --git a/os_pickup.bp b/os_pickup.bp
+index 39ffd45..f670723 100644
+--- a/os_pickup.bp
++++ b/os_pickup.bp
+@@ -52,9 +52,4 @@ android_app_import {
+             apk: "prebuilt/x86_64/webview.apk",
+         },
+     },
+-    optional_uses_libs: [
+-        "android.test.base",
+-        "androidx.window.extensions",
+-        "com.android.extensions.xr",
+-    ],
+ }
+
+-- 
+2.39.2

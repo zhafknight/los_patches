@@ -1,0 +1,32 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: N7000 Patch Pack <n7000-patchset@localhost>
+Date: Thu, 27 Aug 2026 08:01:00 +0800
+Subject: [PATCH] linkerconfig: expose gpsd legacy dependencies
+
+Expose libicuuc and libgui through the vendor default namespace for the
+legacy GPS daemon.
+
+---
+diff --git a/contents/namespace/vendordefault.cc b/contents/namespace/vendordefault.cc
+index a866839..6dd9dd7 100644
+--- a/contents/namespace/vendordefault.cc
++++ b/contents/namespace/vendordefault.cc
+@@ -52,6 +52,15 @@ Namespace BuildVendorNamespace([[maybe_unused]] const Context& ctx,
+   ns.GetLink("rs").AddSharedLib("libRS_internal.so");
+   ns.AddRequires(base::Split(Var("LLNDK_LIBRARIES_VENDOR", ""), ":"));
+ 
++// gpsd need this
++ns.AddRequires(std::vector{
++    "libicuuc.so",
++});
++
++ns.GetLink(ctx.GetSystemNamespaceName()).AddSharedLib({
++    "libgui.so",
++});
++
+   if (android::linkerconfig::modules::IsVendorVndkVersionDefined()) {
+     ns.GetLink(ctx.GetSystemNamespaceName())
+         .AddSharedLib(Var("SANITIZER_DEFAULT_VENDOR"));
+
+-- 
+2.39.2
